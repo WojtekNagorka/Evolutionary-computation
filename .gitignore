@@ -23,4 +23,12 @@
 hs_err_pid*
 replay_pid*
 
+# MacOS file
 .DS_STORE
+
+# Files and dirs asociated with IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+build/
