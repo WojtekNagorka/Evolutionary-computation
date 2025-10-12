@@ -3,9 +3,10 @@ public class Node {
     private int y;
     private int cost;
 
-    // 🧱 Constructors
-    public Node() {
-    }
+    // Constructors
+    // TO CHECK
+    //    public Node() {
+    //    }
 
     public Node(int x, int y, int cost) {
         this.x = x;
@@ -13,7 +14,7 @@ public class Node {
         this.cost = cost;
     }
 
-    // 🧭 Getters
+    // Getters
     public int getX() {
         return x;
     }
@@ -26,7 +27,7 @@ public class Node {
         return cost;
     }
 
-    // 🛠️ Setters
+    // Setters
     public void setX(int x) {
         this.x = x;
     }
@@ -39,7 +40,7 @@ public class Node {
         this.cost = cost;
     }
 
-    // 🔍 For debugging and printing
+    // For debugging and printing
     @Override
     public String toString() {
         return "Node{" +

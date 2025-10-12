@@ -12,30 +12,29 @@ public class TSPSolver {
     public TSPSolver(double[][] distanceMatrix, List<Node> nodes) {
         this.distanceMatrix = distanceMatrix;
         this.nodes = nodes;
-        this.targetCount = Math.max(2, nodes.size() / 2);
+        this.targetCount = Math.max(2, (int) Math.ceil(nodes.size() / 2.0));
     }
 
     // ================================
-    // 1️⃣ RANDOM SOLUTION
+    // 1 RANDOM SOLUTION
     // ================================
-    public Result randomSolution(int startIndex) {
+    public Result randomSolution() {
         List<Integer> route = new ArrayList<>();
         for (int i = 0; i < nodes.size(); i++) route.add(i);
         Collections.shuffle(route, new Random());
 
         // only keep 50% of nodes
         route = route.subList(0, targetCount);
-        if (!route.contains(startIndex)) route.set(0, startIndex);
 
         // close the cycle
-        route.add(startIndex);
+        route.add(route.getFirst());
 
         double totalCost = computeTotalCost(route);
         return new Result(new ArrayList<>(route), totalCost);
     }
 
     // ================================
-    // 2️⃣ NEAREST NEIGHBOR (ADD AT END)
+    // 2 NEAREST NEIGHBOR (ADD AT END)
     // ================================
     public Result nearestNeighborEnd(int startIndex) {
         int n = nodes.size();
@@ -69,7 +68,7 @@ public class TSPSolver {
     }
 
     // ================================
-    // 3️⃣ NEAREST NEIGHBOR (FLEXIBLE INSERTION)
+    // 3 NEAREST NEIGHBOR (FLEXIBLE INSERTION)
     // ================================
     public Result nearestNeighborFlexible(int startIndex) {
         int n = nodes.size();
@@ -110,7 +109,7 @@ public class TSPSolver {
     }
 
     // ================================
-    // 4️⃣ GREEDY CYCLE
+    // 4 GREEDY CYCLE
     // ================================
     public Result greedyCycle(int startIndex) {
         int n = nodes.size();
@@ -153,7 +152,7 @@ public class TSPSolver {
     }
 
     // ================================
-    // 🔹 Utility Methods
+    // Utility Methods
     // ================================
     private int countUsed(boolean[] used) {
         int c = 0;
@@ -188,7 +187,7 @@ public class TSPSolver {
     }
 
     // ================================
-    // 📦 Result Class
+    // Result Class
     // ================================
     public static class Result {
         private final List<Integer> route;

@@ -7,10 +7,13 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        String filePath = "src/data/TSPA.csv"; // path to your CSV file
+        String filePath = "data/TSPA.csv"; // path to your CSV file
         List<Node> nodes = new ArrayList<>();
+        SolutionSpace randomSolutions = new SolutionSpace();
+        SolutionSpace nearestNeighboursAtEnd = new SolutionSpace();
+        SolutionSpace nearestNeighboursFlexible = new SolutionSpace();
 
-        // 🔹 Read CSV into Node list
+        // Read CSV into Node list
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             boolean isFirstLine = true;
@@ -34,7 +37,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        // ✅ Convert List<Node> to coordinate arrays
+        // Convert List<Node> to coordinate arrays
         int n = nodes.size();
         double[] x = new double[n];
         double[] y = new double[n];
@@ -44,18 +47,33 @@ public class Main {
             y[i] = nodes.get(i).getY();
         }
 
-        // ✅ Generate and print distance matrix
+        // Generate and print distance matrix
         DistanceMatrix dm = new DistanceMatrix(x, y);
         System.out.println("=== Distance Matrix ===");
         dm.printMatrix();
 
-        // ✅ Initialize solver
+        // Initialize solver
         TSPSolver solver = new TSPSolver(dm.getMatrix(), nodes);
+        for (int i = 0; i < n; i++){
+            // 1. Random solution
+            TSPSolver.Result randomResult = solver.randomSolution();
+            randomSolutions.addSolution((randomResult));
+
+            //NN at the end
+            TSPSolver.Result nnAtTheEndResult = solver.nearestNeighborEnd(i);
+            nearestNeighboursAtEnd.addSolution(nnAtTheEndResult);
+
+            //NN Flexible
+            TSPSolver.Result nnFlexibleResult = solver.nearestNeighborFlexible(i);
+            nearestNeighboursAtEnd.addSolution(nnFlexibleResult);
+        }
+
+
         int startIndex = 0;
 
-        // ✅ Run all 4 algorithms
+        // Run all 4 algorithms
         System.out.println("\n=== Random Solution ===");
-        TSPSolver.Result randomResult = solver.randomSolution(startIndex);
+        TSPSolver.Result randomResult = solver.randomSolution();
         System.out.println(randomResult);
 
         System.out.println("\n=== Nearest Neighbor (End) ===");
@@ -70,7 +88,7 @@ public class Main {
         TSPSolver.Result greedyResult = solver.greedyCycle(startIndex);
         System.out.println(greedyResult);
 
-        // ✅ Compare all solutions and print best one
+        // Compare all solutions and print best one
         TSPSolver.Result best = randomResult;
         String bestName = "Random Solution";
 
