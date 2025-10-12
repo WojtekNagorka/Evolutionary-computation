@@ -1,3 +1,5 @@
+package lab1.src;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +51,7 @@ public class TSPSolver {
             int next = -1;
             for (int i = 0; i < n; i++) {
                 if (!used[i]) {
-                    double d = distanceMatrix[current][i];
+                    double d = distanceMatrix[current][i] + nodes.get(i).getCost();
                     if (d < bestDist) {
                         bestDist = d;
                         next = i;
@@ -89,7 +91,7 @@ public class TSPSolver {
                     for (int pos = 0; pos < route.size() - 1; pos++) {
                         int a = route.get(pos);
                         int b = route.get(pos + 1);
-                        double increase = distanceMatrix[a][node] + distanceMatrix[node][b] - distanceMatrix[a][b];
+                        double increase = distanceMatrix[a][node] + distanceMatrix[node][b] - distanceMatrix[a][b] + nodes.get(node).getCost();
                         if (increase < bestIncrease) {
                             bestIncrease = increase;
                             bestNode = node;
@@ -180,10 +182,9 @@ public class TSPSolver {
         for (int i = 0; i < route.size() - 1; i++) {
             int a = route.get(i);
             int b = route.get(i + 1);
-            cost += distanceMatrix[a][b];
+            cost += distanceMatrix[a][b] + nodes.get(a).getCost();
         }
-        for (int i : route) cost += nodes.get(i).getCost();
-        return Math.round(cost * 100.0) / 100.0;
+        return cost;
     }
 
     // ================================

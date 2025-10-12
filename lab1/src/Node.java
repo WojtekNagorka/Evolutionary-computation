@@ -1,12 +1,9 @@
+package lab1.src;
+
 public class Node {
     private int x;
     private int y;
     private int cost;
-
-    // Constructors
-    // TO CHECK
-    //    public Node() {
-    //    }
 
     public Node(int x, int y, int cost) {
         this.x = x;

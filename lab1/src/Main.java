@@ -1,3 +1,5 @@
+package lab1.src;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -6,24 +8,21 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-
-        String filePath = "data/TSPA.csv"; // path to your CSV file
+        String fileName = "TSPA";
+        String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
         SolutionSpace randomSolutions = new SolutionSpace();
         SolutionSpace nearestNeighboursAtEnd = new SolutionSpace();
         SolutionSpace nearestNeighboursFlexible = new SolutionSpace();
+        long randomTime = 0;
+        long nnAtTheEndTime = 0;
+        long nnFlexibleTime = 0;
 
         // Read CSV into Node list
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
-            boolean isFirstLine = true;
 
             while ((line = br.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-
                 String[] values = line.split(";");
                 if (values.length >= 3) {
                     int x = Integer.parseInt(values[0].trim());
@@ -55,58 +54,50 @@ public class Main {
         // Initialize solver
         TSPSolver solver = new TSPSolver(dm.getMatrix(), nodes);
         for (int i = 0; i < n; i++){
+            System.out.println(STR."Iteration number:\{i+1}");
             // 1. Random solution
+            long start = System.nanoTime();
             TSPSolver.Result randomResult = solver.randomSolution();
+            long end = System.nanoTime();
             randomSolutions.addSolution((randomResult));
+            randomTime += end - start;
 
-            //NN at the end
+            //2. NN at the end
+            start = System.nanoTime();
             TSPSolver.Result nnAtTheEndResult = solver.nearestNeighborEnd(i);
+            end = System.nanoTime();
             nearestNeighboursAtEnd.addSolution(nnAtTheEndResult);
+            nnAtTheEndTime += end - start;
 
-            //NN Flexible
+            //3. NN Flexible
+            start = System.nanoTime();
             TSPSolver.Result nnFlexibleResult = solver.nearestNeighborFlexible(i);
-            nearestNeighboursAtEnd.addSolution(nnFlexibleResult);
+            end = System.nanoTime();
+            nearestNeighboursFlexible.addSolution(nnFlexibleResult);
+            nnFlexibleTime += end - start;
         }
+        // Printing time
+        System.out.println(STR."Random result time (ms): \{randomTime / 1_000_000}");
+        System.out.println(STR."NN at the end result time (ms): \{nnAtTheEndTime / 1_000_000}");
+        System.out.println(STR."NN flexible result time (ms): \{nnFlexibleTime / 1_000_000}\n");
+
+        // Printing stats
+        System.out.println(STR."***Random result stats:***\n\{randomSolutions.statsToStr()}\n");
+        System.out.println(STR."***NN at the end result stats:***\n\{nearestNeighboursAtEnd.statsToStr()}\n");
+        System.out.println(STR."***NN flexible result stats:***\n\{nearestNeighboursFlexible.statsToStr()}\n");
+
+        // Best solution
+        randomSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_random.csv");
+        nearestNeighboursAtEnd.bestSolutionToCsv(STR."evaluation/results/\{fileName}_nn_end.csv");
+        nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results\{fileName}_nn_flexible.csv");
+
+        nearestNeighboursAtEnd.printBestSolution(nodes);
 
 
-        int startIndex = 0;
-
-        // Run all 4 algorithms
-        System.out.println("\n=== Random Solution ===");
-        TSPSolver.Result randomResult = solver.randomSolution();
-        System.out.println(randomResult);
-
-        System.out.println("\n=== Nearest Neighbor (End) ===");
-        TSPSolver.Result nnEndResult = solver.nearestNeighborEnd(startIndex);
-        System.out.println(nnEndResult);
-
-        System.out.println("\n=== Nearest Neighbor (Flexible) ===");
-        TSPSolver.Result nnFlexibleResult = solver.nearestNeighborFlexible(startIndex);
-        System.out.println(nnFlexibleResult);
-
-        System.out.println("\n=== Greedy Cycle ===");
-        TSPSolver.Result greedyResult = solver.greedyCycle(startIndex);
-        System.out.println(greedyResult);
-
-        // Compare all solutions and print best one
-        TSPSolver.Result best = randomResult;
-        String bestName = "Random Solution";
-
-        if (nnEndResult.getTotalCost() < best.getTotalCost()) {
-            best = nnEndResult;
-            bestName = "Nearest Neighbor (End)";
-        }
-        if (nnFlexibleResult.getTotalCost() < best.getTotalCost()) {
-            best = nnFlexibleResult;
-            bestName = "Nearest Neighbor (Flexible)";
-        }
-        if (greedyResult.getTotalCost() < best.getTotalCost()) {
-            best = greedyResult;
-            bestName = "Greedy Cycle";
-        }
-
-        System.out.println("\n=== Best Solution ===");
-        System.out.println("Algorithm: " + bestName);
-        System.out.println(best);
+//        int startIndex = 0;
+//
+//        System.out.println("\n=== Greedy Cycle ===");
+//        TSPSolver.Result greedyResult = solver.greedyCycle(startIndex);
+//        System.out.println(greedyResult);
     }
 }

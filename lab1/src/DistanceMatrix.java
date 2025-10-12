@@ -1,3 +1,5 @@
+package lab1.src;
+
 public class DistanceMatrix {
 
     private double[][] matrix; // distance matrix
