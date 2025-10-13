@@ -174,6 +174,7 @@ public class TSPSolver {
             route.add(bestPos, bestNode);
             used[bestNode] = true;
         }
+        route.add(route.getFirst());
 
         double totalCost = computeTotalCost(route);
         return new Result(route, totalCost);

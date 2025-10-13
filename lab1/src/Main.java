@@ -145,7 +145,7 @@ public class Main {
         randomSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_random.csv");
         nearestNeighboursAtEnd.bestSolutionToCsv(STR."evaluation/results/\{fileName}_nn_end.csv");
         nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results/\{fileName}_nn_flexible.csv");
-        nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results/\{fileName}_greedy_cycle.csv");
+        greedyCycleSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_greedy_cycle.csv");
 
 //        int startIndex = 0;
 //
