@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String fileName = "TSPB";
+        String fileName = "TSPA";
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class Main {
             writer.write(STR."random_sol,\{randomTime / 1_000_000}\n");
             writer.write(STR."nn_at_end,\{nnAtTheEndTime / 1_000_000}\n");
             writer.write(STR."nn_flexible,\{nnFlexibleTime / 1_000_000}\n");
-            writer.write(STR."greedy_cycle\{greedyCycleTime / 1_000_000}\n");
+            writer.write(STR."greedy_cycle,\{greedyCycleTime / 1_000_000}\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
