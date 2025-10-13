@@ -7591,7 +7591,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p><strong>Input:</strong></p>
+<h3 id="2.1.-Data"><strong>2.1. Data</strong><a class="anchor-link" href="#2.1.-Data">¶</a></h3><p><strong>Input:</strong></p>
 <ul>
 <li>$n$: total number of nodes</li>
 <li>$nodes[i] = (x_i, y_i, cost_i)$ for $i \in [0, n-1]$: array with all nodes</li>
@@ -7613,13 +7613,19 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Random-solution"><strong>Random solution</strong><a class="anchor-link" href="#Random-solution">¶</a></h3><p>RANDOM_SOLUTION(nodes, dist, k):
-route = list of all node indices [0..n-1]
-shuffle(route)
-route = first k nodes from route
-route.add(route[0])</p>
-<pre><code>totalCost = calculateTotalCost(route)
-return (route, totalCost)</code></pre>
+<h3 id="2.2.-Random-solution"><strong>2.2. Random solution</strong><a class="anchor-link" href="#2.2.-Random-solution">¶</a></h3><div class="highlight"><pre><span></span>FUNCTION randomSolution()
+    route ← list of integers [0, 1, 2, ..., n-1]
+    SHUFFLE(route)
+
+    route ← first targetCount elements of route
+
+    route.APPEND(route[0])
+
+    totalCost ← computeTotalCost(route)
+
+    RETURN Result(route, totalCost)
+END FUNCTION
+</pre></div>
 </div>
 </div>
 </div>
@@ -7630,6 +7636,42 @@ return (route, totalCost)</code></pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="2.3.-Nearest-neighbours-adding-node-at-the-end"><strong>2.3. Nearest neighbours adding node at the end</strong><a class="anchor-link" href="#2.3.-Nearest-neighbours-adding-node-at-the-end">¶</a></h3><div class="highlight"><pre><span></span>FUNCTION nearestNeighborEnd(startIndex)
+    n ← number of nodes
+    route ← [startIndex]
+    used[n] ← array of FALSE values
+    used[startIndex] ← TRUE
+    current ← startIndex
+
+    WHILE route.size &lt; targetCount
+        bestDist ← infinity
+        next ← -1
+
+        FOR i FROM 0 TO n-1
+            IF used[i] = FALSE THEN
+                d ← distanceMatrix[current][i] + nodes[i].cost
+                IF d &lt; bestDist THEN
+                    bestDist ← d
+                    next ← i
+                END IF
+            END IF
+        END FOR
+
+        IF next = -1 THEN
+            BREAK
+        END IF
+
+        route.APPEND(next)
+        used[next] ← TRUE
+        current ← next
+    END WHILE
+
+    route.APPEND(startIndex)
+
+    totalCost ← computeTotalCost(route)
+    RETURN Result(route, totalCost)
+END FUNCTION
+</pre></div>
 </div>
 </div>
 </div>
@@ -7640,6 +7682,123 @@ return (route, totalCost)</code></pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="2.4.-Nearest-neighbour-adding-node-anywhere"><strong>2.4. Nearest neighbour adding node anywhere</strong><a class="anchor-link" href="#2.4.-Nearest-neighbour-adding-node-anywhere">¶</a></h3><div class="highlight"><pre><span></span>FUNCTION nearestNeighborFlexible(startIndex)
+    n ← number of nodes
+    route ← [startIndex, startIndex]  
+    used[n] ← array of FALSE values
+    used[startIndex] ← TRUE
+
+    WHILE countUsed(used) &lt; targetCount
+        bestIncrease ← infinity
+        bestNode ← -1
+        bestPos ← -1
+
+        FOR node FROM 0 TO n-1
+            IF used[node] = FALSE THEN
+                FOR pos FROM 0 TO route.size - 2
+                    a ← route[pos]
+                    b ← route[pos + 1]
+                    increase ← distanceMatrix[a][node]
+                                + distanceMatrix[node][b]
+                                - distanceMatrix[a][b]
+                                + nodes[node].cost
+
+                    IF increase &lt; bestIncrease THEN
+                        bestIncrease ← increase
+                        bestNode ← node
+                        bestPos ← pos + 1
+                    END IF
+                END FOR
+            END IF
+        END FOR
+
+        IF bestNode = -1 THEN
+            BREAK
+        END IF
+
+        route.INSERT(bestPos, bestNode)
+        used[bestNode] ← TRUE
+    END WHILE
+
+    totalCost ← computeTotalCost(route)
+    RETURN Result(route, totalCost)
+END FUNCTION
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d67a00f8">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="2.5.-Greedy-cycle"><strong>2.5. Greedy cycle</strong><a class="anchor-link" href="#2.5.-Greedy-cycle">¶</a></h3><div class="highlight"><pre><span></span>FUNCTION greedyCycle(startIndex)
+    n ← number of nodes
+    numToSelect ← ceil(n / 2)
+    route ← [startIndex]
+    used[n] ← array of FALSE values
+    used[startIndex] ← TRUE
+    
+    bestSecond ← -1
+    minObj ← infinity
+
+    FOR i FROM 0 TO n-1
+        IF used[i] = FALSE THEN
+            obj ← 2 * distanceMatrix[startIndex][i]
+                   + nodes[startIndex].cost
+                   + nodes[i].cost
+            IF obj &lt; minObj THEN
+                minObj ← obj
+                bestSecond ← i
+            END IF
+        END IF
+    END FOR
+
+    IF bestSecond = -1 THEN
+        RETURN Result(route, 0)
+    END IF
+
+    route.APPEND(bestSecond)
+    used[bestSecond] ← TRUE
+
+    WHILE route.size &lt; numToSelect
+        bestNode ← -1
+        bestPos ← -1
+        bestIncrease ← infinity
+
+        FOR i FROM 0 TO n-1
+            IF used[i] = FALSE THEN
+                FOR j FROM 0 TO route.size - 1
+                    a ← route[j]
+                    b ← route[(j + 1) MOD route.size]
+                    increase ← distanceMatrix[a][i]
+                                + distanceMatrix[i][b]
+                                - distanceMatrix[a][b]
+                                + nodes[i].cost
+
+                    IF increase &lt; bestIncrease THEN
+                        bestIncrease ← increase
+                        bestNode ← i
+                        bestPos ← j + 1
+                    END IF
+                END FOR
+            END IF
+        END FOR
+
+        IF bestNode = -1 THEN
+            BREAK
+        END IF
+
+        route.INSERT(bestPos, bestNode)
+        used[bestNode] ← TRUE
+    END WHILE
+
+    totalCost ← computeTotalCost(route)
+    RETURN Result(route, totalCost)
+END FUNCTION
+</pre></div>
 </div>
 </div>
 </div>
