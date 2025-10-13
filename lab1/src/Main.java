@@ -2,12 +2,13 @@ package lab1.src;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String fileName = "TSPA";
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
@@ -53,8 +54,8 @@ public class Main {
 
         // Initialize solver
         TSPSolver solver = new TSPSolver(dm.getMatrix(), nodes);
-        for (int i = 0; i < n; i++){
-            System.out.println(STR."Iteration number:\{i+1}");
+        for (int i = 0; i < n; i++) {
+            System.out.println(STR."Iteration number:\{i + 1}");
             // 1. Random solution
             long start = System.nanoTime();
             TSPSolver.Result randomResult = solver.randomSolution();
@@ -81,10 +82,44 @@ public class Main {
         System.out.println(STR."NN at the end result time (ms): \{nnAtTheEndTime / 1_000_000}");
         System.out.println(STR."NN flexible result time (ms): \{nnFlexibleTime / 1_000_000}\n");
 
+        // Writing times to the file
+        try (FileWriter writer = new FileWriter("evaluation/times.csv")) {
+            writer.write("method_name,time\n");
+            writer.write(STR."random_sol,\{randomTime / 1_000_000}\n");
+            writer.write(STR."nn_at_end,\{nnAtTheEndTime / 1_000_000}\n");
+            writer.write(STR."nn_flexible,\{nnFlexibleTime / 1_000_000}\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Printing stats
         System.out.println(STR."***Random result stats:***\n\{randomSolutions.statsToStr()}\n");
         System.out.println(STR."***NN at the end result stats:***\n\{nearestNeighboursAtEnd.statsToStr()}\n");
         System.out.println(STR."***NN flexible result stats:***\n\{nearestNeighboursFlexible.statsToStr()}\n");
+
+        // Writing stats to the file
+        try (FileWriter writer = new FileWriter("evaluation/stats.csv")) {
+            writer.write("method_name,min,max,avg,sd\n");
+            String str="random_sol,";
+            for (Double st: randomSolutions.getAllStats()){
+                str += STR."\{st.toString()},";
+            }
+            writer.write(str.substring(0, str.length()-1)+'\n');
+
+            str = "nn_at_end,";
+            for (Double st: nearestNeighboursAtEnd.getAllStats()){
+                str += STR."\{st.toString()},";
+            }
+            writer.write(str.substring(0, str.length()-1)+'\n');
+
+            str = "nn_flexible,";
+            for (Double st: nearestNeighboursFlexible.getAllStats()){
+                str += STR."\{st.toString()},";
+            }
+            writer.write(str.substring(0, str.length()-1)+'\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Best solution
         randomSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_random.csv");

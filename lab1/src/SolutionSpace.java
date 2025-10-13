@@ -36,7 +36,7 @@ public class SolutionSpace {
         for (double n : costs){
             sum += Math.pow((n - avg), 2);
         }
-        return sum/costs.size();
+        return Math.sqrt(sum/costs.size());
     }
 
     public double getAvg(){
@@ -97,7 +97,7 @@ public class SolutionSpace {
             Node next_node = nodes.get(bestSol.get(i+1));
             System.out.println(STR."Id: \{bestSol.get(i)}, X: \{curr_node.getX()}, Y: \{curr_node.getY()}, " +
                     STR."length: \{Math.sqrt(Math.pow(curr_node.getX() - next_node.getX(), 2) + Math.pow(curr_node.getY() - next_node.getY(), 2))}, " +
-                    STR."cost: \{curr_node.getCost()}\n");
+                    STR."cost: \{curr_node.getCost()}");
         }
     }
 }
