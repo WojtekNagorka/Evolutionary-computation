@@ -9,15 +9,19 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String fileName = "TSPA";
+        String fileName = "TSPB";
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
+
         SolutionSpace randomSolutions = new SolutionSpace();
         SolutionSpace nearestNeighboursAtEnd = new SolutionSpace();
         SolutionSpace nearestNeighboursFlexible = new SolutionSpace();
+        SolutionSpace greedyCycleSolutions = new SolutionSpace();
+
         long randomTime = 0;
         long nnAtTheEndTime = 0;
         long nnFlexibleTime = 0;
+        long greedyCycleTime = 0;
 
         // Read CSV into Node list
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -76,18 +80,27 @@ public class Main {
             end = System.nanoTime();
             nearestNeighboursFlexible.addSolution(nnFlexibleResult);
             nnFlexibleTime += end - start;
+
+            //4. Greedy cycle
+            start = System.nanoTime();
+            TSPSolver.Result greedyCycleResult = solver.greedyCycle(i);
+            end = System.nanoTime();
+            greedyCycleSolutions.addSolution(greedyCycleResult);
+            greedyCycleTime += end - start;
         }
         // Printing time
         System.out.println(STR."Random result time (ms): \{randomTime / 1_000_000}");
         System.out.println(STR."NN at the end result time (ms): \{nnAtTheEndTime / 1_000_000}");
         System.out.println(STR."NN flexible result time (ms): \{nnFlexibleTime / 1_000_000}\n");
+        System.out.println(STR."Greedy cycle result time (ms): \{greedyCycleTime / 1_000_000}\n");
 
         // Writing times to the file
-        try (FileWriter writer = new FileWriter("evaluation/times.csv")) {
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_times.csv")) {
             writer.write("method_name,time\n");
             writer.write(STR."random_sol,\{randomTime / 1_000_000}\n");
             writer.write(STR."nn_at_end,\{nnAtTheEndTime / 1_000_000}\n");
             writer.write(STR."nn_flexible,\{nnFlexibleTime / 1_000_000}\n");
+            writer.write(STR."greedy_cycle\{greedyCycleTime / 1_000_000}\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,9 +109,10 @@ public class Main {
         System.out.println(STR."***Random result stats:***\n\{randomSolutions.statsToStr()}\n");
         System.out.println(STR."***NN at the end result stats:***\n\{nearestNeighboursAtEnd.statsToStr()}\n");
         System.out.println(STR."***NN flexible result stats:***\n\{nearestNeighboursFlexible.statsToStr()}\n");
+        System.out.println(STR."***Greedy cycle result stats:***\n\{greedyCycleSolutions.statsToStr()}\n");
 
         // Writing stats to the file
-        try (FileWriter writer = new FileWriter("evaluation/stats.csv")) {
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_stats.csv")) {
             writer.write("method_name,min,max,avg,sd\n");
             String str="random_sol,";
             for (Double st: randomSolutions.getAllStats()){
@@ -117,6 +131,12 @@ public class Main {
                 str += STR."\{st.toString()},";
             }
             writer.write(str.substring(0, str.length()-1)+'\n');
+
+            str = "greedy_cycle,";
+            for (Double st: greedyCycleSolutions.getAllStats()){
+                str += STR."\{st.toString()},";
+            }
+            writer.write(str.substring(0, str.length()-1)+'\n');
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,10 +144,8 @@ public class Main {
         // Best solution
         randomSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_random.csv");
         nearestNeighboursAtEnd.bestSolutionToCsv(STR."evaluation/results/\{fileName}_nn_end.csv");
-        nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results\{fileName}_nn_flexible.csv");
-
-        nearestNeighboursAtEnd.printBestSolution(nodes);
-
+        nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results/\{fileName}_nn_flexible.csv");
+        nearestNeighboursFlexible.bestSolutionToCsv(STR."evaluation/results/\{fileName}_greedy_cycle.csv");
 
 //        int startIndex = 0;
 //

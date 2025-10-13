@@ -115,36 +115,62 @@ public class TSPSolver {
     // ================================
     public Result greedyCycle(int startIndex) {
         int n = nodes.size();
-        List<Integer> route = new ArrayList<>();
-        route.add(startIndex);
-        route.add(closestUnused(startIndex, new boolean[n]));
-        route.add(startIndex);
+        int numToSelect = Math.max(2, (int) Math.ceil(n / 2.0));
 
+        List<Integer> route = new ArrayList<>();
         boolean[] used = new boolean[n];
         used[startIndex] = true;
-        used[route.get(1)] = true;
+        route.add(startIndex);
 
-        while (countUsed(used) < targetCount) {
-            double bestIncrease = Double.MAX_VALUE;
+        int bestSecond = -1;
+        double minObj = Double.MAX_VALUE;
+
+        for (int i = 0; i < n; i++) {
+            if (!used[i]) {
+                double obj = 2 * distanceMatrix[startIndex][i]
+                        + nodes.get(startIndex).getCost()
+                        + nodes.get(i).getCost();
+                if (obj < minObj) {
+                    minObj = obj;
+                    bestSecond = i;
+                }
+            }
+        }
+
+        if (bestSecond == -1){
+            return new Result(route, 0);
+        }
+        route.add(bestSecond);
+        used[bestSecond] = true;
+
+        // Iteratively insert nodes
+        while (route.size() < numToSelect) {
             int bestNode = -1;
             int bestPos = -1;
+            double bestIncrease = Double.MAX_VALUE;
 
-            for (int node = 0; node < n; node++) {
-                if (!used[node]) {
-                    for (int pos = 0; pos < route.size() - 1; pos++) {
-                        int a = route.get(pos);
-                        int b = route.get(pos + 1);
-                        double increase = distanceMatrix[a][node] + distanceMatrix[node][b] - distanceMatrix[a][b];
+            for (int i = 0; i < n; i++) {
+                if (!used[i]) {
+                    for (int j = 0; j < route.size(); j++) {
+                        int a = route.get(j);
+                        int b = route.get((j + 1) % route.size());
+                        double increase = distanceMatrix[a][i]
+                                + distanceMatrix[i][b]
+                                - distanceMatrix[a][b]
+                                + nodes.get(i).getCost();
+
                         if (increase < bestIncrease) {
                             bestIncrease = increase;
-                            bestNode = node;
-                            bestPos = pos + 1;
+                            bestNode = i;
+                            bestPos = j + 1;
                         }
                     }
                 }
             }
 
-            if (bestNode == -1) break;
+            if (bestNode == -1){
+                break;
+            }
             route.add(bestPos, bestNode);
             used[bestNode] = true;
         }
@@ -157,25 +183,25 @@ public class TSPSolver {
     // Utility Methods
     // ================================
     private int countUsed(boolean[] used) {
-        int c = 0;
-        for (boolean b : used) if (b) c++;
-        return c;
+        int count = 0;
+        for (boolean b : used) if (b) count++;
+        return count;
     }
 
-    private int closestUnused(int index, boolean[] used) {
-        double best = Double.MAX_VALUE;
-        int next = -1;
-        for (int i = 0; i < nodes.size(); i++) {
-            if (!used[i] && i != index) {
-                double d = distanceMatrix[index][i];
-                if (d < best) {
-                    best = d;
-                    next = i;
-                }
-            }
-        }
-        return next == -1 ? index : next;
-    }
+//    private int closestUnused(int index, boolean[] used) {
+//        double best = Double.MAX_VALUE;
+//        int next = -1;
+//        for (int i = 0; i < nodes.size(); i++) {
+//            if (!used[i] && i != index) {
+//                double d = distanceMatrix[index][i];
+//                if (d < best) {
+//                    best = d;
+//                    next = i;
+//                }
+//            }
+//        }
+//        return next == -1 ? index : next;
+//    }
 
     private double computeTotalCost(List<Integer> route) {
         double cost = 0.0;
