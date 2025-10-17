@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class Greedy2RegretHeuristic extends TSPSolver{
@@ -5,7 +8,40 @@ public class Greedy2RegretHeuristic extends TSPSolver{
         super(distanceMatrix, nodes);
     }
 
-    public void solve(){ //change void to Result
-        //
+    public Result solve(int startIndex){
+        int n = nodes.size();
+        List<Integer> route = new ArrayList<>();
+        boolean[] used = new boolean[n];
+        route.add(startIndex);
+        route.add(startIndex);
+        used[startIndex] = true;
+//        int current = startIndex;
+
+        while (route.size() < targetCount) {
+            List<List<Integer>> insertions = new ArrayList<>(); // sorted list of 2 best node insertions with costs
+            List<List<Integer>> regrets = new ArrayList<>(); // <(node, value_of_regret, place_to_insert)>
+            for (int i=0; i < n; i++) {
+                if (!used[i]) {
+                    Node curr = nodes.get(i);
+                    for (int j = 0; j < route.size() - 1; j++) {
+                        int prev = route.get(j);
+                        int next = route.get(j + 1);
+                        int cost = roundToInt(distanceMatrix[i][prev]) + roundToInt(distanceMatrix[i][next]) + curr.getCost();
+                        insertions.add(Arrays.asList(j+1, cost));
+                    }
+                    insertions.sort(Comparator.comparingInt(a -> a.get(1)));
+                    int regret = insertions.get(1).get(1) - insertions.getFirst().get(1);
+                    regrets.add(Arrays.asList(i, regret, insertions.getFirst().getFirst()));
+                }
+            }
+            regrets.sort(Comparator.comparingInt(a -> a.get(1)));
+            route.add(regrets.getFirst().get(2), regrets.getFirst().getFirst());
+            used[regrets.getFirst().getFirst()] = true;
+        }
+        double totalCost = computeTotalCost(route);
+        return new Result(route, totalCost);
+    }
+    private int roundToInt(double i){
+        return (int) (i * 2)/2;
     }
 }
