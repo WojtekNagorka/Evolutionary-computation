@@ -5,7 +5,7 @@ public class GreedyHeuristicWithWeightedSumCriterion extends TSPSolver{
         super(distanceMatrix, nodes);
     }
 
-    public void solve(){ // change void to Result
-        //
+    public Result solve(int startIndex){ // change void to Result
+        return Result();
     }
 }

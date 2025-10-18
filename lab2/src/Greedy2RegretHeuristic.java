@@ -15,7 +15,6 @@ public class Greedy2RegretHeuristic extends TSPSolver{
         route.add(startIndex);
         route.add(startIndex);
         used[startIndex] = true;
-//        int current = startIndex;
 
         while (route.size() < targetCount) {
             List<List<Integer>> insertions = new ArrayList<>(); // sorted list of 2 best node insertions with costs
@@ -34,14 +33,13 @@ public class Greedy2RegretHeuristic extends TSPSolver{
                     regrets.add(Arrays.asList(i, regret, insertions.getFirst().getFirst()));
                 }
             }
+            int nodeIndex = regrets.getFirst().getFirst();
+            int insertPosition = regrets.getFirst().get(2);
             regrets.sort(Comparator.comparingInt(a -> a.get(1)));
-            route.add(regrets.getFirst().get(2), regrets.getFirst().getFirst());
+            route.add(insertPosition, nodeIndex);
             used[regrets.getFirst().getFirst()] = true;
         }
         double totalCost = computeTotalCost(route);
         return new Result(route, totalCost);
-    }
-    private int roundToInt(double i){
-        return (int) (i * 2)/2;
     }
 }

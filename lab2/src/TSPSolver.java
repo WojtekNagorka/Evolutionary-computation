@@ -29,4 +29,8 @@ public class TSPSolver {
         }
         return cost;
     }
+
+    protected int roundToInt(double value){
+        return (int) Math.round(value);
+    }
 }
