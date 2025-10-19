@@ -3,7 +3,7 @@ import java.util.*;
 public class Greedy2RegretHeuristicCycle extends TSPSolver {
 
     private final double regretWeight;
-    private final int k; // how many top deltas to use for regret (usually 2)
+    private final int k; // how many top deltas to use for regret (in our case 2)
 
     public Greedy2RegretHeuristicCycle(double[][] distanceMatrix, List<Node> nodes, int k, double regretWeight) {
         super(distanceMatrix, nodes);

@@ -3,7 +3,7 @@ import java.util.*;
 public class Greedy2RegretHeuristicFlexibleNN extends TSPSolver {
 
     private final double regretWeight;
-    private final int k; // number of deltas to consider for regret (usually 2)
+    private final int k; // number of deltas to consider for regret (in our case 2)
 
     public Greedy2RegretHeuristicFlexibleNN(double[][] distanceMatrix, List<Node> nodes, int k, double regretWeight) {
         super(distanceMatrix, nodes);
