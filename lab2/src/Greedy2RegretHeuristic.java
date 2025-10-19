@@ -29,7 +29,13 @@ public class Greedy2RegretHeuristic extends TSPSolver{
                         insertions.add(Arrays.asList(j+1, cost));
                     }
                     insertions.sort(Comparator.comparingInt(a -> a.get(1)));
-                    int regret = insertions.get(1).get(1) - insertions.getFirst().get(1);
+                    int regret;
+                    if (insertions.size() < 2){
+                        regret = insertions.getFirst().get(1);
+                    }
+                    else{
+                        regret = insertions.get(1).get(1) - insertions.getFirst().get(1);
+                    }
                     regrets.add(Arrays.asList(i, regret, insertions.getFirst().getFirst()));
                 }
             }

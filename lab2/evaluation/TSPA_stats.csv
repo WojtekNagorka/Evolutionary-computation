@@ -1,0 +1,3 @@
+method_name,min,max,avg,sd
+greedy_two_regret_heuristic,129001.0,167073.0,147255.15,7370.66
+greedy_heuristic_with_weighted_sum_criterion,0.0,0.0,0.0,0.0
