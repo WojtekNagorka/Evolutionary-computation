@@ -1,0 +1,5 @@
+method_name,time
+weighted_regret_cycle,9089
+pure_regret_cycle,8579
+weighted_regret_flexibleNN,8929
+pure_regret_flexibleNN,8665
