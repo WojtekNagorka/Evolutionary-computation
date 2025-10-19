@@ -3,11 +3,9 @@ import java.util.*;
 public class Greedy2RegretHeuristicFlexibleNN extends TSPSolver {
 
     private final double regretWeight;
-    private final int k; // number of deltas to consider for regret (in our case 2)
 
-    public Greedy2RegretHeuristicFlexibleNN(double[][] distanceMatrix, List<Node> nodes, int k, double regretWeight) {
+    public Greedy2RegretHeuristicFlexibleNN(double[][] distanceMatrix, List<Node> nodes, double regretWeight) {
         super(distanceMatrix, nodes);
-        this.k = k;
         this.regretWeight = regretWeight;
     }
 
@@ -25,63 +23,63 @@ public class Greedy2RegretHeuristicFlexibleNN extends TSPSolver {
             int bestNode = -1;
             int bestPos = -1;
             double bestScore = Double.NEGATIVE_INFINITY;
+            double bestDeltaForBestNode = Double.POSITIVE_INFINITY;
 
-            // for every unused node
+            // evaluate all unused nodes
             for (int j = 0; j < n; j++) {
                 if (used[j]) continue;
 
                 Node curr = nodes.get(j);
                 List<Double> deltas = new ArrayList<>();
 
-                // compute insertion delta for every possible position (including before first and after last)
+                // compute insertion delta for all possible positions (before first, between, after last)
                 for (int pos = 0; pos <= route.size(); pos++) {
                     double delta;
-
                     if (pos == 0) {
-                        // insert before first node
                         int kNode = route.get(0);
                         delta = distanceMatrix[j][kNode] + curr.getCost();
                     } else if (pos == route.size()) {
-                        // insert after last node
                         int i = route.get(route.size() - 1);
                         delta = distanceMatrix[i][j] + curr.getCost();
                     } else {
-                        // insert between i and k
                         int i = route.get(pos - 1);
                         int kNode = route.get(pos);
                         delta = distanceMatrix[i][j] + distanceMatrix[j][kNode]
                                 - distanceMatrix[i][kNode] + curr.getCost();
                     }
-
                     deltas.add(delta);
                 }
 
-                // sort deltas ascending to get best and k-th best insertions
+                // sort deltas ascending (smallest = best insertion position)
                 List<Double> sorted = new ArrayList<>(deltas);
                 Collections.sort(sorted);
 
+                // take the two best deltas
                 double bestDelta = sorted.get(0);
-                double regret = 0.0;
+                double secondBestDelta = sorted.size() > 1 ? sorted.get(1) : sorted.get(0);
+                double regret = secondBestDelta - bestDelta;
 
-                for (int m = 1; m < Math.min(k, sorted.size()); m++) {
-                    regret += (sorted.get(m) - bestDelta);
-                }
+                double alpha = regretWeight;
+                double beta = 1.0 - regretWeight;
+                double score = alpha * regret + beta * (-bestDelta);
 
-                // Weighted-sum criterion (mix of regret and cost improvement)
-                double score = regretWeight * regret - (1 - regretWeight) * bestDelta;
-
-                if (score > bestScore) {
+                // tie-breaking: prefer smaller bestDelta when scores equal
+                if (score > bestScore || (score == bestScore && bestDelta < bestDeltaForBestNode)) {
                     bestScore = score;
                     bestNode = j;
                     bestPos = deltas.indexOf(bestDelta);
+                    bestDeltaForBestNode = bestDelta;
                 }
             }
 
-            // insert node with best weighted score
+            // insert node with best score
             route.add(bestPos, bestNode);
             used[bestNode] = true;
         }
+
+        // close the route (return to start)
         route.add(route.get(0));
+
         double totalCost = computeTotalCost(route);
         return new Result(route, totalCost);
     }

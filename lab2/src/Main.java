@@ -58,9 +58,9 @@ public class Main {
                 new Greedy2RegretHeuristicCycle(dm.getMatrix(), nodes, 2, 1.0);
 
         Greedy2RegretHeuristicFlexibleNN WeightedFlexibleNNHeuristic =
-                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 2, 0.5);
+                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 0.5);
         Greedy2RegretHeuristicFlexibleNN PureFlexibleNNHeuristic =
-                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 2, 1.0);
+                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 1.0);
 
         // --- Run all heuristics ---
         for (int i = 0; i < n; i++) {
