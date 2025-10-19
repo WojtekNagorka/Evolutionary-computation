@@ -11,15 +11,20 @@ public class Main {
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
 
-        SolutionSpace TwoRegretSolutions = new SolutionSpace();
-        SolutionSpace WeightedSumHeuristicSolutions = new SolutionSpace();
+        // 4 solution spaces for 4 heuristics
+        SolutionSpace WeightedCycleSolutions = new SolutionSpace();
+        SolutionSpace PureCycleSolutions = new SolutionSpace();
+        SolutionSpace WeightedFlexibleNNSolutions = new SolutionSpace();
+        SolutionSpace PureFlexibleNNSolutions = new SolutionSpace();
 
-        long TwoRegretTime = 0;
-        long WeightedSumHeuristicTime = 0;
+        long WeightedCycleTime = 0;
+        long PureCycleTime = 0;
+        long WeightedFlexibleNNTime = 0;
+        long PureFlexibleNNTime = 0;
 
+        // Load nodes from CSV
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
-
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");
                 if (values.length >= 3) {
@@ -29,82 +34,116 @@ public class Main {
                     nodes.add(new Node(x, y, cost));
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Convert List<Node> to coordinate arrays
+        // Create distance matrix
         int n = nodes.size();
         double[] x = new double[n];
         double[] y = new double[n];
-
         for (int i = 0; i < n; i++) {
             x[i] = nodes.get(i).getX();
             y[i] = nodes.get(i).getY();
         }
 
-        // Generate and print distance matrix
         DistanceMatrix dm = new DistanceMatrix(x, y);
         System.out.println("=== Distance Matrix ===");
         dm.printMatrix();
 
-        Greedy2RegretHeuristic TwoRegretHeuristic = new Greedy2RegretHeuristic(dm.getMatrix(), nodes);
-        GreedyHeuristicWithWeightedSumCriterion WeightedSumHeuristic = new GreedyHeuristicWithWeightedSumCriterion(dm.getMatrix(), nodes);
+        // --- Instantiate heuristics ---
+        Greedy2RegretHeuristicCycle WeightedCycleHeuristic =
+                new Greedy2RegretHeuristicCycle(dm.getMatrix(), nodes, 2, 0.5);
+        Greedy2RegretHeuristicCycle PureCycleHeuristic =
+                new Greedy2RegretHeuristicCycle(dm.getMatrix(), nodes, 2, 1.0);
 
+        Greedy2RegretHeuristicFlexibleNN WeightedFlexibleNNHeuristic =
+                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 2, 0.5);
+        Greedy2RegretHeuristicFlexibleNN PureFlexibleNNHeuristic =
+                new Greedy2RegretHeuristicFlexibleNN(dm.getMatrix(), nodes, 2, 1.0);
+
+        // --- Run all heuristics ---
         for (int i = 0; i < n; i++) {
-            // 1. Greedy2RegretHeuristic
-            System.out.println(STR."Iteration number:\{i + 1}");
+            System.out.println(STR."Iteration number: \{i + 1}");
+
+            // 1. Weighted Regret Cycle (0.5)
             long start = System.nanoTime();
-            Result TwoRegretResult = TwoRegretHeuristic.solve(i);
+            Result weightedCycleResult = WeightedCycleHeuristic.solve(i);
             long end = System.nanoTime();
-            TwoRegretSolutions.addSolution((TwoRegretResult));
-            TwoRegretTime += end - start;
+            WeightedCycleSolutions.addSolution(weightedCycleResult);
+            WeightedCycleTime += end - start;
 
-            // 2. GreedyHeuristicWithWeightedSumCriterion
+            // 2. Pure Regret Cycle (1.0)
             start = System.nanoTime();
-            Result WeightedSumResult = WeightedSumHeuristic.solve(i);
+            Result pureCycleResult = PureCycleHeuristic.solve(i);
             end = System.nanoTime();
-            WeightedSumHeuristicSolutions.addSolution(WeightedSumResult);
-            WeightedSumHeuristicTime += end - start;
-        }
-        // Printing time
-        System.out.println(STR."GreedyTwoRegretHeuristic result time (ms): \{TwoRegretTime / 1_000_000}");
-        System.out.println(STR."GreedyHeuristicWithWeightedSumCriterion result time (ms): \{WeightedSumHeuristicTime / 1_000_000}");
+            PureCycleSolutions.addSolution(pureCycleResult);
+            PureCycleTime += end - start;
 
-        // Writing times to the file
+            // 3. Weighted Regret FlexibleNN (0.5)
+            start = System.nanoTime();
+            Result weightedFlexibleNNResult = WeightedFlexibleNNHeuristic.solve(i);
+            end = System.nanoTime();
+            WeightedFlexibleNNSolutions.addSolution(weightedFlexibleNNResult);
+            WeightedFlexibleNNTime += end - start;
+
+            // 4. Pure Regret FlexibleNN (1.0)
+            start = System.nanoTime();
+            Result pureFlexibleNNResult = PureFlexibleNNHeuristic.solve(i);
+            end = System.nanoTime();
+            PureFlexibleNNSolutions.addSolution(pureFlexibleNNResult);
+            PureFlexibleNNTime += end - start;
+        }
+
+        // --- Print execution times ---
+        System.out.println(STR."Weighted Regret Cycle time (ms): \{WeightedCycleTime / 1_000_000}");
+        System.out.println(STR."Pure Regret Cycle time (ms): \{PureCycleTime / 1_000_000}");
+        System.out.println(STR."Weighted Regret FlexibleNN time (ms): \{WeightedFlexibleNNTime / 1_000_000}");
+        System.out.println(STR."Pure Regret FlexibleNN time (ms): \{PureFlexibleNNTime / 1_000_000}");
+
+        // --- Write times to file ---
         try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_times.csv")) {
             writer.write("method_name,time\n");
-            writer.write(STR."greedy_two_regret_heuristic,\{TwoRegretTime / 1_000_000}\n");
-            writer.write(STR."greedy_heuristic_with_weighted_sum_criterion,\{WeightedSumHeuristicTime / 1_000_000}\n");
+            writer.write(STR."weighted_regret_cycle,\{WeightedCycleTime / 1_000_000}\n");
+            writer.write(STR."pure_regret_cycle,\{PureCycleTime / 1_000_000}\n");
+            writer.write(STR."weighted_regret_flexibleNN,\{WeightedFlexibleNNTime / 1_000_000}\n");
+            writer.write(STR."pure_regret_flexibleNN,\{PureFlexibleNNTime / 1_000_000}\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Printing stats
-        System.out.println(STR."***GreedyTwoRegretHeuristic result stats:***\n\{TwoRegretSolutions.statsToStr()}\n");
-        System.out.println(STR."***GreedyHeuristicWithWeightedSumCriterion result stats:***\n\{WeightedSumHeuristicSolutions.statsToStr()}\n");
+        // --- Print statistics ---
+        System.out.println(STR."*** Weighted Regret Cycle stats: ***\n\{WeightedCycleSolutions.statsToStr()}\n");
+        System.out.println(STR."*** Pure Regret Cycle stats: ***\n\{PureCycleSolutions.statsToStr()}\n");
+        System.out.println(STR."*** Weighted Regret FlexibleNN stats: ***\n\{WeightedFlexibleNNSolutions.statsToStr()}\n");
+        System.out.println(STR."*** Pure Regret FlexibleNN stats: ***\n\{PureFlexibleNNSolutions.statsToStr()}\n");
 
-        // Writing stats to the file
+        // --- Write statistics to file ---
         try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_stats.csv")) {
             writer.write("method_name,min,max,avg,sd\n");
-            String str="greedy_two_regret_heuristic,";
-            for (Double st: TwoRegretSolutions.getAllStats()){
-                str += STR."\{st.toString()},";
-            }
-            writer.write(str.substring(0, str.length()-1)+'\n');
 
-            str = "greedy_heuristic_with_weighted_sum_criterion,";
-            for (Double st: WeightedSumHeuristicSolutions.getAllStats()){
-                str += STR."\{st.toString()},";
-            }
-            writer.write(str.substring(0, str.length()-1)+'\n');
+            writeStatsLine(writer, "weighted_regret_cycle", WeightedCycleSolutions);
+            writeStatsLine(writer, "pure_regret_cycle", PureCycleSolutions);
+            writeStatsLine(writer, "weighted_regret_flexibleNN", WeightedFlexibleNNSolutions);
+            writeStatsLine(writer, "pure_regret_flexibleNN", PureFlexibleNNSolutions);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Best solution
-        TwoRegretSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_two_regret.csv");
-        WeightedSumHeuristicSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_weighted_sum.csv");
+        // --- Save best solutions ---
+        // Ensure directories exist
+        WeightedCycleSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_weighted_regret_cycle.csv");
+        PureCycleSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_pure_regret_cycle.csv");
+        WeightedFlexibleNNSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_weighted_regret_flexibleNN.csv");
+        PureFlexibleNNSolutions.bestSolutionToCsv(STR."evaluation/results/\{fileName}_pure_regret_flexibleNN.csv");
+    }
+
+    private static void writeStatsLine(FileWriter writer, String name, SolutionSpace space) throws IOException {
+        StringBuilder str = new StringBuilder(name + ",");
+        for (Double st : space.getAllStats()) {
+            str.append(STR."\{st},");
+        }
+        writer.write(str.substring(0, str.length() - 1) + '\n');
     }
 }

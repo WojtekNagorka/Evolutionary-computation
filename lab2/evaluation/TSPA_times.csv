@@ -1,3 +1,5 @@
 method_name,time
-greedy_two_regret_heuristic,54652
-greedy_heuristic_with_weighted_sum_criterion,1
+weighted_regret_cycle,9089
+pure_regret_cycle,8579
+weighted_regret_flexibleNN,8929
+pure_regret_flexibleNN,8665
