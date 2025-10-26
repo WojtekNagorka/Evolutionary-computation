@@ -7,7 +7,12 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String fileName = "TSPA";
+        conductExperiments("TSPA");
+        conductExperiments("TSPB");
+
+    }
+
+    public static void conductExperiments(String fileName){
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
 
