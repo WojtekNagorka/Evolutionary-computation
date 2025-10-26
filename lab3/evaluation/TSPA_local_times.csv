@@ -1,9 +1,9 @@
 method_name,time_ms
-steepest_node_heuristic,223
-steepest_edge_heuristic,567
-greedy_node_heuristic,403
-greedy_edge_heuristic,1256
-steepest_node_random,41426
-steepest_edge_random,24514
-greedy_node_random,100097
-greedy_edge_random,95858
+steepest_node_heuristic,112
+steepest_edge_heuristic,332
+greedy_node_heuristic,187
+greedy_edge_heuristic,564
+steepest_node_random,6305
+steepest_edge_random,5586
+greedy_node_random,13583
+greedy_edge_random,14289

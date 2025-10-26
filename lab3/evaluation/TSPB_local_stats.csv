@@ -1,9 +1,9 @@
 method_name,min,max,avg,sd
-steepest_node_heuristic,44488.0,54391.0,47131.29,1708.05
+steepest_node_heuristic,44507.0,54347.0,47186.6,1683.8
 steepest_edge_heuristic,44320.0,51431.0,46347.17,1450.58
-greedy_node_heuristic,44456.0,52877.0,47107.2,1652.67
-greedy_edge_heuristic,44320.0,51304.0,46373.22,1493.65
-steepest_node_random,158448.0,184082.0,170399.01,5156.38
-steepest_edge_random,131071.0,133932.0,132514.23,576.77
-greedy_node_random,153385.0,176212.0,165222.83,4368.63
-greedy_edge_random,132000.0,135688.0,133561.54,669.38
+greedy_node_heuristic,44507.0,54035.0,47182.89,1655.2
+greedy_edge_heuristic,44320.0,52582.0,46379.82,1533.07
+steepest_node_random,55594.0,70220.0,63151.57,2881.23
+steepest_edge_random,46002.0,51158.0,48523.47,1062.92
+greedy_node_random,53992.0,69985.0,60891.65,2588.89
+greedy_edge_random,46405.0,52029.0,48475.62,1122.24

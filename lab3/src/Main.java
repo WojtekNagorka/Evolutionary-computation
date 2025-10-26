@@ -83,6 +83,7 @@ public class Main {
             List<Integer> randomRoute = new ArrayList<>();
             for (int j = 0; j < n; j++) randomRoute.add(j);
             Collections.shuffle(randomRoute, random);
+            randomRoute = randomRoute.subList(0, (n/2));
             randomRoute.add(randomRoute.get(0));
 
             // --- Run all 8 local search configurations ---
