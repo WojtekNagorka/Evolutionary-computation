@@ -32,3 +32,8 @@ replay_pid*
 *.iws
 out/
 build/
+
+Assignment*.pdf
+report.pdf
+report.html
+Solution checker.xlsx
