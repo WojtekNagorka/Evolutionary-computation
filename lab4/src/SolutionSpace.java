@@ -55,7 +55,7 @@ public class SolutionSpace {
 
     public String statsToStr(){
         List<Double> stats = getAllStats();
-        return(STR."Min: \{stats.get(0)}\n Max: \{stats.get(1)}\n Avg: \{stats.get(2)}\n Sd: \{stats.get(3)}");
+        return(STR."Min: \{stats.get(0)}\nMax: \{stats.get(1)}\nAvg: \{stats.get(2)}\nSd: \{stats.get(3)}");
     }
 
     public void bestSolutionToCsv(String filePath){
