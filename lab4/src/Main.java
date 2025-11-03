@@ -87,7 +87,7 @@ public class Main {
         List<Double> statsTrue = solutionsNodeExchangeTrue.getAllStats();
         textToWrite = Arrays.asList(
                 "method_name,min,max,avg,sd\n",
-                STR."candidate_moves_heuristic_without_nodes_exchange,\{statsFalse.getFirst()},\{statsFalse.get(1)},\{statsFalse.get(2)},\{statsFalse.get(3)}",
+                STR."candidate_moves_heuristic_without_nodes_exchange,\{statsFalse.getFirst()},\{statsFalse.get(1)},\{statsFalse.get(2)},\{statsFalse.get(3)}\n",
                 STR."candidate_moves_heuristic_with_nodes_exchange,\{statsTrue.getFirst()},\{statsTrue.get(1)},\{statsTrue.get(2)},\{statsTrue.get(3)}"
         );
         String stats_csv_path = STR."evaluation/\{instance}_stats.csv";

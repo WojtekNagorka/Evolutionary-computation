@@ -1,2 +1,3 @@
 method_name,min,max,avg,sd
-candidate_moves_heuristic_without_nodes_exchange,77927.0,91216.0,83463.81,2521.84candidate_moves_heuristic_with_nodes_exchange,104152.0,137889.0,120461.25,5803.0
+candidate_moves_heuristic_without_nodes_exchange,76777.0,93182.0,83290.13,2550.57
+candidate_moves_heuristic_with_nodes_exchange,106017.0,138080.0,120543.48,5857.83
