@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
 
 public class Main {
 
-    // --- NEW: Run 200 times per assignment spec ---
     private static final int NUM_RUNS = 200;
 
     public static void main(String[] args) {
@@ -17,7 +16,7 @@ public class Main {
     }
 
     /**
-     * NEW: Helper method to generate a random solution (copied from friend's Solution.java)
+     * Helper method to generate a random solution
      * This creates a partial tour of size n/2, which is required for inter-route moves.
      */
     private static List<Integer> getRandomSolution(List<Node> nodes, Random rand) {
@@ -56,13 +55,11 @@ public class Main {
             y[i] = nodes.get(i).getY();
         }
 
-        // *** THIS IS THE FIXED LINE ***
         DistanceMatrix dm = new DistanceMatrix(x, y);
         System.out.println(STR."=== Distance Matrix for \{fileName} ===");
         dm.printMatrix();
 
 
-        // --- NEW: Local Search Variants per Assignment 5 ---
         // 1. Steepest, edge-swap, WITH move list
         LocalSearch lsWithLM = new LocalSearch(dm.getMatrix(), nodes, true, false, true);
 
@@ -85,7 +82,7 @@ public class Main {
 
         // --- NEW: Run NUM_RUNS times ---
         for (int i = 0; i < NUM_RUNS; i++) {
-            if (i % 20 == 0) {
+            if ((i+1) % 20 == 0) {
                 System.out.println(STR."Iteration number: \{i + 1} / \{NUM_RUNS}");
             }
 
@@ -117,7 +114,7 @@ public class Main {
         }
 
         // --- Write times to CSV ---
-        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_local_times.csv")) {
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_times.csv")) {
             writer.write("method_name,avg_time_ms\n");
             for (int i = 0; i < methodNames.length; i++) {
                 double avgTimeMs = (totalTimes[i] / 1_000_000.0) / NUM_RUNS;
@@ -134,7 +131,7 @@ public class Main {
         }
 
         // --- Write statistics to file ---
-        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_local_stats.csv")) {
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_stats.csv")) {
             writer.write("method_name,min,max,avg,sd\n");
             for (String name : methodNames) {
                 StringBuilder line = new StringBuilder(name + ",");

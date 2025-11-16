@@ -1,5 +1,3 @@
 method_name,min,max,avg,sd
-weighted_regret_cycle,47144.0,55700.0,50934.6,1918.42
-pure_regret_cycle,66465.0,77642.0,71601.67,1880.8
-weighted_regret_flexibleNN,44891.0,55247.0,47664.46,1773.23
-pure_regret_flexibleNN,69933.0,80278.0,74444.46,1930.25
+steepest_edge_LM_random,45039.0,51931.0,48552.19,1176.04
+steepest_edge_baseline_random,45580.0,51563.0,48432.57,1226.31

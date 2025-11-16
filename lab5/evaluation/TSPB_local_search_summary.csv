@@ -1,9 +1,0 @@
-method_name,total_cost,time_ms
-steepest_node_heuristic,48006.0,4.6419
-steepest_edge_heuristic,47520.0,7.2149
-greedy_node_heuristic,48097.0,9.1732
-greedy_edge_heuristic,47452.0,16.9378
-steepest_node_random,165251.0,296.7401
-steepest_edge_random,133374.0,128.4415
-greedy_node_random,166440.0,502.4541
-greedy_edge_random,132153.0,494.0881

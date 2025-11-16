@@ -1,5 +1,3 @@
-method_name,time
-weighted_regret_cycle,6405
-pure_regret_cycle,6299
-weighted_regret_flexibleNN,6466
-pure_regret_flexibleNN,6409
+method_name,avg_time_ms
+steepest_edge_LM_random,7.579666025
+steepest_edge_baseline_random,27.604284370000002
