@@ -1,0 +1,5 @@
+method_name,min,max,avg,sd
+weighted_regret_cycle,71108.0,73395.0,72129.71,502.78
+pure_regret_cycle,105692.0,126951.0,115579.34,3397.21
+weighted_regret_flexibleNN,70010.0,75452.0,72401.34,1409.01
+pure_regret_flexibleNN,106373.0,126570.0,116659.01,3254.31
