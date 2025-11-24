@@ -18,6 +18,7 @@ public class Main {
     public static void conductExperiments(String fileName) {
         String filePath = STR."../data/\{fileName}.csv";
         List<Node> nodes = new ArrayList<>();
+        List<Integer> number_of_iterations = new ArrayList<>();
 
         // --- 1. Load Data ---
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -95,8 +96,9 @@ public class Main {
             long end = System.currentTimeMillis();
 
             ilsStats.addSolution(result);
+            int nr_of_it = ilsSolver.getNumberOfIterations();
+            number_of_iterations.add(nr_of_it);
 
-            // FIXED: Used result.getTotalCost() instead of result.cost
             System.out.println(STR."ILS Run \{i+1}/\{NUM_EXPERIMENT_RUNS}: Cost=\{result.getTotalCost()} Time=\{end - start}ms");
         }
 
@@ -104,17 +106,45 @@ public class Main {
         // ---------------------------------------------------------
         // 4. Save and Report Results
         // ---------------------------------------------------------
-        saveResults(fileName, "MSLS", mslsStats);
-        saveResults(fileName, "ILS", ilsStats);
+//        saveResults(fileName, "MSLS", mslsStats);
+//        saveResults(fileName, "ILS", ilsStats);
+        saveResults(fileName, new String[]{"MSLS", "ILS"}, new SolutionSpace[]{mslsStats, ilsStats});
+        saveList(fileName, "number_of_iterations", number_of_iterations);
 
         System.out.println(STR."\n=== Final Statistics for \{fileName} ===");
         System.out.println("Method | Min | Avg | Max");
         System.out.println(STR."MSLS   | \{mslsStats.getMin()} | \{mslsStats.getAvg()} | \{mslsStats.getMax()}");
         System.out.println(STR."ILS    | \{ilsStats.getMin()} | \{ilsStats.getAvg()} | \{ilsStats.getMax()}");
         System.out.println("==========================================\n");
+
+        // ---------------------------------------------------------
+        // 5. Report times
+        // ---------------------------------------------------------
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_times.csv")) {
+            writer.write(STR."\{(int)avgMslsTimeMs}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void saveResults(String fileName, String methodName, SolutionSpace stats) {
+    private static void saveResults(String fileName, String[] methodNames, SolutionSpace[] solutionSpaces){
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_stats.csv")) {
+            writer.write("method_name,min,max,avg,sd\n");
+            StringBuilder line = new StringBuilder();
+            for (int i=0; i<2; i++){
+                line.append(methodNames[i]);
+                for (Double st : solutionSpaces[i].getAllStats()) {
+                    line.append(",").append(st);
+                }
+                line.append("\n");
+            }
+            writer.write(line.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveResultsPerMethod(String fileName, String methodName, SolutionSpace stats) {
         // 1. Save Stats
         try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_\{methodName}_stats.csv")) {
             writer.write("min,max,avg,sd\n");
@@ -122,12 +152,24 @@ public class Main {
             for (Double st : stats.getAllStats()) {
                 line.append(st).append(",");
             }
-            writer.write(line.substring(0, line.length() - 1) + "\n");
+            writer.write(STR."\{line.substring(0, line.length() - 1)}\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // 2. Save Best Solution Found
-        stats.bestSolutionToCsv(STR."evaluation/results/\{fileName}_\{methodName}_best.csv");
+        stats.bestSolutionToCsv(STR."evaluation/results/\{fileName}_\{methodName}.csv");
+    }
+
+    private static void saveList(String instance, String title, List<Integer> list_to_save){
+        try (FileWriter writer = new FileWriter(STR."evaluation/\{instance}_\{title}.csv")) {
+            StringBuilder line = new StringBuilder();
+            for (Integer el : list_to_save) {
+                line.append(el).append("\n");
+            }
+            writer.write(line.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

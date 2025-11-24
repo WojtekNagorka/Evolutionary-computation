@@ -4,6 +4,7 @@ public class ILS extends TSPSolver {
 
     private final int maxTimeMs;
     private final Random random;
+    private int number_of_iterations;
 
     public ILS(double[][] distanceMatrix, List<Node> nodes, int maxTimeMs) {
         super(distanceMatrix, nodes);
@@ -25,10 +26,11 @@ public class ILS extends TSPSolver {
 
 
         List<Integer> currentSolRoute = new ArrayList<>(currentResult.getRoute());
-        if(currentSolRoute.size() > 1 && currentSolRoute.get(0).equals(currentSolRoute.get(currentSolRoute.size()-1))) {
-            currentSolRoute.remove(currentSolRoute.size()-1);
+        if (currentSolRoute.size() > 1 && currentSolRoute.get(0).equals(currentSolRoute.get(currentSolRoute.size() - 1))) {
+            currentSolRoute.remove(currentSolRoute.size() - 1);
         }
 
+        number_of_iterations = 0;
         // 3. Iteration Loop
         while (System.currentTimeMillis() - startTime < maxTimeMs) {
 
@@ -40,19 +42,19 @@ public class ILS extends TSPSolver {
             Result newResult = localSearch.solve(perturbedRoute);
 
             // C. Acceptance Criterion
-            // FIXED: used .getTotalCost()
             if (newResult.getTotalCost() < currentResult.getTotalCost()) {
                 currentResult = newResult;
                 currentSolRoute = new ArrayList<>(newResult.getRoute());
 
-                if(currentSolRoute.size() > 1 && currentSolRoute.get(0).equals(currentSolRoute.get(currentSolRoute.size()-1))) {
-                    currentSolRoute.remove(currentSolRoute.size()-1);
+                if (currentSolRoute.size() > 1 && currentSolRoute.get(0).equals(currentSolRoute.get(currentSolRoute.size() - 1))) {
+                    currentSolRoute.remove(currentSolRoute.size() - 1);
                 }
 
                 if (newResult.getTotalCost() < bestResult.getTotalCost()) {
                     bestResult = newResult;
                 }
             }
+            number_of_iterations++;
         }
 
         return bestResult;
@@ -103,5 +105,9 @@ public class ILS extends TSPSolver {
         Collections.shuffle(allIndices, random);
         int routeSize = (int)(nodes.size() * 0.5);
         return new ArrayList<>(allIndices.subList(0, routeSize));
+    }
+
+    public int getNumberOfIterations(){
+        return number_of_iterations;
     }
 }
