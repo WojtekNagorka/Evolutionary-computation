@@ -6,6 +6,7 @@ import java.util.Random;
 public class LargeNeighborhoodSearch extends TSPSolver{
     private final boolean useLocalSearch;
     private final int maxTimeMs;
+    private int nr_of_iterations;
 
     public LargeNeighborhoodSearch(double[][] distanceMatrix, List<Node> nodes, boolean useLocalSearch, int maxTimeMs) {
         super(distanceMatrix, nodes);
@@ -22,7 +23,9 @@ public class LargeNeighborhoodSearch extends TSPSolver{
         if (useLocalSearch){
             route = localSearch.solve(route.getRoute());
         }
+        nr_of_iterations=0;
         while (System.currentTimeMillis() - startTime < maxTimeMs){
+            nr_of_iterations += 1;
             List<Integer> destroyedRoute = destroy(route.getRoute());
             Result newRoute = repair(destroyedRoute);
             if (useLocalSearch){
@@ -32,6 +35,7 @@ public class LargeNeighborhoodSearch extends TSPSolver{
             if (newRoute.getTotalCost() > route.getTotalCost()){
                 route = newRoute;
             }
+
         }
         return route;
     }
@@ -63,6 +67,13 @@ public class LargeNeighborhoodSearch extends TSPSolver{
     }
 
     public Result repair(List<Integer> route){
-        ///
+        Greedy2RegretHeuristicCycleRepairer repairer = new Greedy2RegretHeuristicCycleRepairer(
+                distanceMatrix, nodes, 2, 0.5
+        );
+        return repairer.repair(route);
+    }
+
+    public int getNumberOfIterations(){
+        return nr_of_iterations;
     }
 }

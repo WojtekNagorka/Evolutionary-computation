@@ -7,8 +7,8 @@ import java.util.*;
 public class Main {
 
     // --- Experiment Constants ---
-    private static final int NUM_EXPERIMENT_RUNS = 20; // Run MSLS and ILS 20 times each
-    private static final int MSLS_ITERATIONS = 200;    // MSLS performs 200 LS runs internally
+    private static final int NUM_EXPERIMENT_RUNS = 2; // Run LNS and ILS 20 times each
+    private static final int MSLS_ITERATIONS = 200;    // LNS performs 200 LS runs internally
 
     public static void main(String[] args) {
         conductExperiments("TSPA");
@@ -22,13 +22,15 @@ public class Main {
         System.out.println(STR."=== Distance Matrix for \{fileName} calculated ===");
 
         // --- Prepare Statistics Containers ---
-        SolutionSpace mslsStats = new SolutionSpace();
-        SolutionSpace lnsWithLocalSearchStats = new SolutionSpace();
-        SolutionSpace lnsWithoutLocalSearchStats = new SolutionSpace();
+        SolutionSpace LnsWithLocalSearchStats = new SolutionSpace();
+        SolutionSpace LnsWithoutLocalSearchStats = new SolutionSpace();
 
-        List<Integer> number_of_iterations = new ArrayList<>();
+        List<Integer> LnsWithLSIterations = new ArrayList<>();
+        List<Integer> LnsWithoutLSIterations = new ArrayList<>();
 
         long totalMslsTime = 0;
+        long totalLnsNoLSTime = 0;
+        long totalLnsWithLSTime = 0;
 
         System.out.println(STR."\n--- Starting MSLS Experiment (\{NUM_EXPERIMENT_RUNS} runs, \{MSLS_ITERATIONS} LS calls each) ---");
 
@@ -46,61 +48,73 @@ public class Main {
             long duration = end - start;
             totalMslsTime += duration;
 
-            mslsStats.addSolution(result);
-
             System.out.println(STR."MSLS Run \{i+1}/\{NUM_EXPERIMENT_RUNS}: Cost=\{result.getTotalCost()} Time=\{duration}ms");
         }
 
         // Calculate Average Time to limit ILS
         long avgMslsTimeMs = totalMslsTime / NUM_EXPERIMENT_RUNS;
         System.out.println(STR."\n*** Average MSLS Time: \{avgMslsTimeMs} ms ***");
-        System.out.println("This will be used as the time limit for ILS.");
+        System.out.println("This will be used as the time limit later.");
 
-
-        System.out.println(STR."\n--- Starting ILS Experiment (\{NUM_EXPERIMENT_RUNS} runs) ---");
+        System.out.println(STR."\n--- Starting LNS Experiment (\{NUM_EXPERIMENT_RUNS} runs) ---");
 
         // ---------------------------------------------------------
-        // 3. Run Iterated Local Search (ILS)
+        // 3. Run LNS with Local Search
         // ---------------------------------------------------------
-        ILS ilsSolver = new ILS(dm.getMatrix(), nodes, (int)avgMslsTimeMs);
+        LargeNeighborhoodSearch LnsWithLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, true, (int)avgMslsTimeMs);
 
         for (int i = 0; i < NUM_EXPERIMENT_RUNS; i++) {
             long start = System.currentTimeMillis();
 
-            Result result = ilsSolver.solve();
+            Result result = LnsWithLS.solve();
 
             long end = System.currentTimeMillis();
+            totalLnsWithLSTime += (end - start);
 
-            ilsStats.addSolution(result);
-            int nr_of_it = ilsSolver.getNumberOfIterations();
-            number_of_iterations.add(nr_of_it);
+            LnsWithLocalSearchStats.addSolution(result);
+            int nr_of_it = LnsWithLS.getNumberOfIterations();
+            LnsWithLSIterations.add(nr_of_it);
 
-            System.out.println(STR."ILS Run \{i+1}/\{NUM_EXPERIMENT_RUNS}: Cost=\{result.getTotalCost()} Time=\{end - start}ms");
+            System.out.println(STR."LNS+LS Run \{i+1}/\{NUM_EXPERIMENT_RUNS}: Cost=\{result.getTotalCost()} Time=\{end - start}ms");
+        }
+
+        // ---------------------------------------------------------
+        // 4. Run LNS without Local Search
+        // ---------------------------------------------------------
+        LargeNeighborhoodSearch LnsWithoutLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, false, (int)avgMslsTimeMs);
+        for (int i = 0; i < NUM_EXPERIMENT_RUNS; i++) {
+            long start = System.currentTimeMillis();
+
+            Result result = LnsWithoutLS.solve();
+
+            long end = System.currentTimeMillis();
+            totalLnsNoLSTime += (end - start);
+
+            LnsWithoutLocalSearchStats.addSolution(result);
+            int nr_of_it = LnsWithoutLS.getNumberOfIterations();
+            LnsWithoutLSIterations.add(nr_of_it);
+
+            System.out.println(STR."LNS-LS Run \{i+1}/\{NUM_EXPERIMENT_RUNS}: Cost=\{result.getTotalCost()} Time=\{end - start}ms");
         }
 
 
         // ---------------------------------------------------------
-        // 4. Save and Report Results
+        // 5. Save and Report Results
         // ---------------------------------------------------------
-//        saveResults(fileName, "MSLS", mslsStats);
-//        saveResults(fileName, "ILS", ilsStats);
-        saveResults(fileName, new String[]{"MSLS", "ILS"}, new SolutionSpace[]{mslsStats, ilsStats});
-        saveList(fileName, "number_of_iterations", number_of_iterations);
+        saveResults(fileName, new String[]{"LNSWithLS", "LNSWithoutLS"}, new SolutionSpace[]{LnsWithLocalSearchStats, LnsWithoutLocalSearchStats});
+        saveList(fileName, "number_of_iterations_with_LS", LnsWithLSIterations);
+        saveList(fileName, "number_of_iterations_no_LS", LnsWithoutLSIterations);
 
         System.out.println(STR."\n=== Final Statistics for \{fileName} ===");
         System.out.println("Method | Min | Avg | Max");
-        System.out.println(STR."MSLS   | \{mslsStats.getMin()} | \{mslsStats.getAvg()} | \{mslsStats.getMax()}");
-        System.out.println(STR."ILS    | \{ilsStats.getMin()} | \{ilsStats.getAvg()} | \{ilsStats.getMax()}");
+        System.out.println(STR."LNS + LS   | \{LnsWithLocalSearchStats.getMin()} | \{LnsWithLocalSearchStats.getAvg()} | \{LnsWithLocalSearchStats.getMax()}");
+        System.out.println(STR."LNS - LS   | \{LnsWithoutLocalSearchStats.getMin()} | \{LnsWithoutLocalSearchStats.getAvg()} | \{LnsWithoutLocalSearchStats.getMax()}");
         System.out.println("==========================================\n");
 
         // ---------------------------------------------------------
-        // 5. Report times
+        // 6. Report times
         // ---------------------------------------------------------
-        try (FileWriter writer = new FileWriter(STR."evaluation/\{fileName}_times.csv")) {
-            writer.write(STR."\{(int)avgMslsTimeMs}");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // TODO
     }
 
     private static List<Node> loadNodesFromCSV(String fileName){

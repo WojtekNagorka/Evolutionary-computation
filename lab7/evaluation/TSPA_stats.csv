@@ -1,0 +1,3 @@
+method_name,min,max,avg,sd
+LNSWithLS,71964.0,75261.0,73612.5,1648.5
+LNSWithoutLS,251171.0,255065.0,253118.0,1947.0
