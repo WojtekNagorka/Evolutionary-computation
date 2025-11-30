@@ -7,7 +7,7 @@ import java.util.*;
 public class Main {
 
     // --- Experiment Constants ---
-    private static final int NUM_EXPERIMENT_RUNS = 4; // Run LNS and ILS 20 times each
+    private static final int NUM_EXPERIMENT_RUNS = 20; // Run LNS and ILS 20 times each
     private static final int MSLS_ITERATIONS = 200;    // LNS performs 200 LS runs internally
 
     public static void main(String[] args) {
@@ -18,6 +18,7 @@ public class Main {
     public static void conductExperiments(String fileName) {
         List<Node> nodes = loadNodesFromCSV(fileName);
         DistanceMatrix dm = createDistanceMatrix(nodes);
+        boolean useCycle = false;
 
         System.out.println(STR."=== Distance Matrix for \{fileName} calculated ===");
 
@@ -61,7 +62,7 @@ public class Main {
         // ---------------------------------------------------------
         // 3. Run LNS with Local Search
         // ---------------------------------------------------------
-        LargeNeighborhoodSearch LnsWithLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, true, (int)avgMslsTimeMs);
+        LargeNeighborhoodSearch LnsWithLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, true, (int)avgMslsTimeMs, useCycle);
 
         for (int i = 0; i < NUM_EXPERIMENT_RUNS; i++) {
             long start = System.currentTimeMillis();
@@ -82,7 +83,7 @@ public class Main {
         // ---------------------------------------------------------
         // 4. Run LNS without Local Search
         // ---------------------------------------------------------
-        LargeNeighborhoodSearch LnsWithoutLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, false, (int)avgMslsTimeMs);
+        LargeNeighborhoodSearch LnsWithoutLS = new LargeNeighborhoodSearch(dm.getMatrix(), nodes, false, (int)avgMslsTimeMs, useCycle);
         for (int i = 0; i < NUM_EXPERIMENT_RUNS; i++) {
             long start = System.currentTimeMillis();
 

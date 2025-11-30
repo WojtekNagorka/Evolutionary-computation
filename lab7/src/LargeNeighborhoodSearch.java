@@ -7,11 +7,13 @@ public class LargeNeighborhoodSearch extends TSPSolver{
     private final boolean useLocalSearch;
     private final int maxTimeMs;
     private int nr_of_iterations;
+    private final boolean useCycle;
 
-    public LargeNeighborhoodSearch(double[][] distanceMatrix, List<Node> nodes, boolean useLocalSearch, int maxTimeMs) {
+    public LargeNeighborhoodSearch(double[][] distanceMatrix, List<Node> nodes, boolean useLocalSearch, int maxTimeMs, boolean useCycle) {
         super(distanceMatrix, nodes);
         this.useLocalSearch = useLocalSearch;
         this.maxTimeMs = maxTimeMs;
+        this.useCycle = useCycle;
     }
 
     public Result solve(){
@@ -67,8 +69,14 @@ public class LargeNeighborhoodSearch extends TSPSolver{
     }
 
     public Result repair(List<Integer> route){
-        Greedy2RegretHeuristicCycleRepairer repairer = new Greedy2RegretHeuristicCycleRepairer(
-                distanceMatrix, nodes, 2, 0.5
+        if (useCycle) {
+            Greedy2RegretHeuristicCycleRepairer repairer = new Greedy2RegretHeuristicCycleRepairer(
+                    distanceMatrix, nodes, 2, 0.5
+            );
+            return repairer.repair(route);
+        }
+        Greedy2RegretHeuristicFlexibleNNRepairer repairer = new Greedy2RegretHeuristicFlexibleNNRepairer(
+                distanceMatrix, nodes, 0.5
         );
         return repairer.repair(route);
     }
