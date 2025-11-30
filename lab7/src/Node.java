@@ -22,19 +22,6 @@ public class Node {
         return cost;
     }
 
-    // Setters
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
     // For debugging and printing
     @Override
     public String toString() {

@@ -14,12 +14,6 @@ public class TSPSolver {
         this.targetCount = Math.max(2, (int) Math.ceil(nodes.size() / 2.0));
     }
 
-    protected int countUsed(boolean[] used) {
-        int count = 0;
-        for (boolean b : used) if (b) count++;
-        return count;
-    }
-
     protected double computeTotalCost(List<Integer> route) {
         double cost = 0.0;
         for (int i = 0; i < route.size() - 1; i++) {

@@ -33,13 +33,6 @@ public class DistanceMatrix {
     }
 
     /**
-     * Returns distance between two points i and j
-     */
-    public double getDistance(int i, int j) {
-        return matrix[i][j];
-    }
-
-    /**
      * Prints the distance matrix in readable form
      */
     public void printMatrix() {

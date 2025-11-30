@@ -32,7 +32,7 @@ public class LargeNeighborhoodSearch extends TSPSolver{
                 newRoute = localSearch.solve(newRoute.getRoute());
             }
 
-            if (newRoute.getTotalCost() > route.getTotalCost()){
+            if (newRoute.getTotalCost() < route.getTotalCost()){
                 route = newRoute;
             }
 
