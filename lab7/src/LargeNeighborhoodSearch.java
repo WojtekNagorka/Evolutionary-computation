@@ -23,8 +23,8 @@ public class LargeNeighborhoodSearch extends TSPSolver{
             route = localSearch.solve(route.getRoute());
         }
         while (System.currentTimeMillis() - startTime < maxTimeMs){
-            Result newRoute = destroy(route.getRoute());
-            newRoute = repair(newRoute.getRoute());
+            List<Integer> destroyedRoute = destroy(route.getRoute());
+            Result newRoute = repair(destroyedRoute);
             if (useLocalSearch){
                 newRoute = localSearch.solve(newRoute.getRoute());
             }
@@ -51,8 +51,15 @@ public class LargeNeighborhoodSearch extends TSPSolver{
         return new Result(new ArrayList<>(route), totalCost);
     }
 
-    public Result destroy(List<Integer> route){
-        ///
+    public List<Integer> destroy(List<Integer> route){
+        int nodesToDestroy = (int) (0.3 * targetCount);
+        route.removeLast();
+
+        for (int i=0; i < nodesToDestroy; i++){
+            int randomIdx = (int)(Math.random() * route.size());
+            route.remove(randomIdx);
+        }
+        return route;
     }
 
     public Result repair(List<Integer> route){
