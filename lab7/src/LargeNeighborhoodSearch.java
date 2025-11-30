@@ -21,10 +21,8 @@ public class LargeNeighborhoodSearch extends TSPSolver{
 
         Result route = generateRandomSolution();
         LocalSearch localSearch = new LocalSearch(distanceMatrix, nodes, true, false);
+        route = localSearch.solve(route.getRoute());
 
-        if (useLocalSearch){
-            route = localSearch.solve(route.getRoute());
-        }
         nr_of_iterations=0;
         while (System.currentTimeMillis() - startTime < maxTimeMs){
             nr_of_iterations += 1;
