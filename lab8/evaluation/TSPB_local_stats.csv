@@ -1,0 +1,3 @@
+method_name,min,max,avg,sd
+steepest_edge_LM_random,60359.0,71115.0,65559.76,2029.46
+steepest_edge_baseline_random,61173.0,74767.0,65336.18,2060.55
