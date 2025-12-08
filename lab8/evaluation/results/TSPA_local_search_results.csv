@@ -1,6 +1,0 @@
-method_name,total_cost,time_ms
-initial_heuristic,71548.0,0
-steepest_node_exchange,71232.0,0
-steepest_edge_exchange,71232.0,0
-greedy_node_exchange,70832.0,0
-greedy_edge_exchange,70744.0,0
