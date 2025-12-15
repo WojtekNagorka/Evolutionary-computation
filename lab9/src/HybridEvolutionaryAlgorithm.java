@@ -10,7 +10,6 @@ public class HybridEvolutionaryAlgorithm extends TSPSolver {
     private final boolean useOperator2;
     private final boolean useLocalSearchAfterRecombination;
 
-    // Diversification Parameters (Retained as requested)
     private final double MUTATION_RATE = 0.30;
     private final double CONVERGENCE_THRESHOLD = 5.0; // Trigger restart if best/worst gap is small
 
