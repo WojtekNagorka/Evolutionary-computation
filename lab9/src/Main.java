@@ -56,14 +56,14 @@ public class Main {
 
         System.out.println(STR."\n--- Running \{instanceName} [\{runLabel}] ---");
 
-        List<Node> nodes = loadNodes(STR."../data/\{instanceName}.csv");
+        List<Node> nodes = loadNodes(STR."../../data/\{instanceName}.csv");
         if (nodes == null) return new Stats("Error");
 
         DistanceMatrix dm = createDistanceMatrix(nodes);
         Stats stats = new Stats(runLabel);
         double totalCost = 0;
 
-        String outputFilePath = STR."evaluation/\{instanceName}_\{runLabel}.csv";
+        String outputFilePath = STR."../evaluation/\{instanceName}_\{runLabel}.csv";
 
         try (FileWriter writer = new FileWriter(outputFilePath)) {
             writer.write("run_id,cost,route\n");
