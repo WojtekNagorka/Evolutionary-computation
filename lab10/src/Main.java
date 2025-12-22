@@ -56,7 +56,7 @@ public class Main {
         // ---------------------------------------------------------
         // 2. Run Iterated Local Search (ILS)
         // ---------------------------------------------------------
-        ILS ilsSolver = new ILS(dm.getMatrix(), nodes, TIME_LIMIT_MS);
+        ILSWithSimulatedAnnealing ilsSolver = new ILSWithSimulatedAnnealing(dm.getMatrix(), nodes, TIME_LIMIT_MS);
 
         for (int i = 0; i < NUM_EXPERIMENT_RUNS; i++) {
             long start = System.currentTimeMillis();
@@ -80,7 +80,7 @@ public class Main {
         // 3. Save and Report Results
         // ---------------------------------------------------------
 
-        saveResults(fileName, new String[]{"ILS"}, new SolutionSpace[]{ilsStats});
+        saveResults(fileName, new String[]{"ILS_with_SA"}, new SolutionSpace[]{ilsStats});
         saveList(fileName, "number_of_iterations", number_of_iterations);
 
         System.out.println("\n=== Final Statistics for " + fileName + " ===");
@@ -90,13 +90,9 @@ public class Main {
         System.out.println("==========================================\n");
 
         // ---------------------------------------------------------
-        // 4. Report times (Fixed time limit)
+        // 4. Report best solution
         // ---------------------------------------------------------
-        try (FileWriter writer = new FileWriter("evaluation/" + fileName + "_times.csv")) {
-            writer.write(String.valueOf(TIME_LIMIT_MS));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ilsStats.bestSolutionToCsv("evaluation/results/" + fileName + "_best_solution.csv");
     }
 
     private static void saveResults(String fileName, String[] methodNames, SolutionSpace[] solutionSpaces){

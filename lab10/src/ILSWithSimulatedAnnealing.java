@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class ILS extends TSPSolver {
+public class ILSWithSimulatedAnnealing extends TSPSolver {
 
     private final int maxTimeMs;
     private final Random random;
@@ -14,7 +14,7 @@ public class ILS extends TSPSolver {
     private final double acceptanceProbability = 0.01; // Probability to accept a worse solution initially
     private final int perturbationSize = 3;
 
-    public ILS(double[][] distanceMatrix, List<Node> nodes, int maxTimeMs) {
+    public ILSWithSimulatedAnnealing(double[][] distanceMatrix, List<Node> nodes, int maxTimeMs) {
         super(distanceMatrix, nodes);
         this.maxTimeMs = maxTimeMs;
         this.random = new Random();
