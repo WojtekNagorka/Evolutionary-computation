@@ -16,7 +16,6 @@ public class Main {
     }
 
     public static void conductExperiments(String fileName) {
-        // FIXED: Standard string concatenation
         String filePath = "../data/" + fileName + ".csv";
         List<Node> nodes = new ArrayList<>();
         List<Integer> number_of_iterations = new ArrayList<>();
@@ -68,11 +67,9 @@ public class Main {
 
             ilsStats.addSolution(result);
 
-            // Ensure your ILS class has this getter
             int nr_of_it = ilsSolver.getNumberOfIterations();
             number_of_iterations.add(nr_of_it);
 
-            // FIXED: Replaced STR template with String.format or concatenation
             System.out.println("ILS Run " + (i+1) + "/" + NUM_EXPERIMENT_RUNS +
                     ": Cost=" + result.getTotalCost() +
                     " Time=" + (end - start) + "ms" +
@@ -89,14 +86,12 @@ public class Main {
         System.out.println("\n=== Final Statistics for " + fileName + " ===");
         System.out.println("Method | Min | Avg | Max");
 
-        // FIXED: Standard concatenation
         System.out.println("ILS    | " + ilsStats.getMin() + " | " + ilsStats.getAvg() + " | " + ilsStats.getMax());
         System.out.println("==========================================\n");
 
         // ---------------------------------------------------------
         // 4. Report times (Fixed time limit)
         // ---------------------------------------------------------
-        // FIXED: Concatenation
         try (FileWriter writer = new FileWriter("evaluation/" + fileName + "_times.csv")) {
             writer.write(String.valueOf(TIME_LIMIT_MS));
         } catch (IOException e) {
@@ -124,7 +119,6 @@ public class Main {
     }
 
     private static void saveList(String instance, String title, List<Integer> list_to_save){
-        // FIXED: Concatenation
         try (FileWriter writer = new FileWriter("evaluation/" + instance + "_" + title + ".csv")) {
             StringBuilder line = new StringBuilder();
             for (Integer el : list_to_save) {

@@ -8,12 +8,11 @@ public class ILS extends TSPSolver {
     // Track the number of iterations
     private int numberOfIterations = 0;
 
-    // --- SA Parameters (Matched to Pseudo-code) ---
     private final double coolingRate = 0.9999;
     private final double minTemperature = 1.0;
     private final double typicalDelta = 50.0; // Expected degradation (delta) for a move
     private final double acceptanceProbability = 0.01; // Probability to accept a worse solution initially
-    private final int perturbationSize = 3; // 'k' in pseudo-code
+    private final int perturbationSize = 3;
 
     public ILS(double[][] distanceMatrix, List<Node> nodes, int maxTimeMs) {
         super(distanceMatrix, nodes);
@@ -40,8 +39,6 @@ public class ILS extends TSPSolver {
             currentSolRoute.remove(currentSolRoute.size()-1);
         }
 
-        // --- SA Initialization (Matched to Pseudo-code) ---
-        // initialTemperature = -typicalDelta / ln(acceptanceProbability)
         double temperature = -typicalDelta / Math.log(acceptanceProbability);
 
         // 3. Iteration Loop
@@ -105,8 +102,6 @@ public class ILS extends TSPSolver {
         int n = route.size();
         if (n < 4) return;
 
-        // 1. Apply k random 2-opt moves (REVERSE segments)
-        // Matches PERTURB_TWO_OPT(solution, k) logic
         for (int m = 0; m < k; m++) {
             int idx1 = random.nextInt(n - 1);     // 0 to n-2
             int idx2 = random.nextInt(n);         // 0 to n-1
@@ -117,20 +112,14 @@ public class ILS extends TSPSolver {
                 idx1 = idx2;
                 idx2 = temp;
             } else if (idx1 == idx2) {
-                // Ensure distinct indices if possible
                 if (idx2 < n - 1) idx2++;
                 else if (idx1 > 0) idx1--;
             }
 
-            // Reverse segment from idx1+1 to idx2 (Standard 2-opt kick)
-            // (Using idx1+1 to avoid reversing the very first edge if not needed,
-            // but standard reverse(i, j) is fine too. Using strict reverse logic:)
+
             reverseSublist(route, idx1, idx2);
         }
-
-        // 2. Swap Selected <-> Unselected (Crucial for Subset Problems)
-        // Kept this because generateRandomRoute() implies a subset problem (0.5 * size).
-        // Without this, the solver cannot change which nodes are in the tour.
+        
         Set<Integer> inRoute = new HashSet<>(route);
         List<Integer> unselected = new ArrayList<>();
         for(int i=0; i<nodes.size(); i++) {
