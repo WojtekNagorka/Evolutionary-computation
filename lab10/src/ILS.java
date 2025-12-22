@@ -119,7 +119,7 @@ public class ILS extends TSPSolver {
 
             reverseSublist(route, idx1, idx2);
         }
-        
+
         Set<Integer> inRoute = new HashSet<>(route);
         List<Integer> unselected = new ArrayList<>();
         for(int i=0; i<nodes.size(); i++) {

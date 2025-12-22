@@ -56,7 +56,6 @@ public class SolutionSpace {
         return Arrays.asList(getMin(), getMax(), roundToTwoDecimals(getAvg()), roundToTwoDecimals(getSd()));
     }
 
-    // FIXED: Replaced STR with standard concatenation
     public String statsToStr() {
         List<Double> stats = getAllStats();
         return "Min: " + stats.get(0) + "\n Max: " + stats.get(1) + "\n Avg: " + stats.get(2) + "\n Sd: " + stats.get(3);
@@ -89,7 +88,6 @@ public class SolutionSpace {
         }
     }
 
-    // FIXED: Replaced STR with standard concatenation
     public void printBestSolution(List<Node> nodes) {
         if (solutions.isEmpty()) return;
 
